@@ -13,7 +13,7 @@ class GameViewModel(private val wordRepository: MockWordRepository) : ViewModel(
     val gameState = _gameState.asStateFlow()
 
     fun startNewGame(difficulty: Difficulty) {
-        val secretWord = wordRepository.getWordByDifficulty(difficulty).uppercase() 
+        val secretWord = wordRepository.getWordByDifficulty(difficulty).uppercase()
         _gameState.value = GameModel(
             secretWord = secretWord,
             revealedWord = "*".repeat(secretWord.length),
