@@ -38,10 +38,20 @@ class GameViewModel(private val wordRepository: MockWordRepository) : ViewModel(
                     else currentState.revealedWord[index]
                 }
                 .joinToString("")
-            isGameWon = updatedRevealedWord == currentState.secretWord
+            isGameWon = updatedRevealedWord.equals(currentState.secretWord, ignoreCase = true)
         } else {
             updatedAttempts++
             isGameLost = updatedAttempts >= currentState.maxAttempts
+        }
+
+        _gameState.update { state ->
+            state.copy(
+                revealedWord = updatedRevealedWord,
+                attempts = updatedAttempts,
+                usedLetters = updatedUsedLetters,
+                isGameWon = isGameWon,
+                isGameLost = isGameLost
+            )
         }
 
         _gameState.update { state ->

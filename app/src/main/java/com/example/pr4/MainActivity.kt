@@ -23,10 +23,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun App() {
-    var currentScreen by remember { mutableStateOf("launch") }
+    var currentRoute by remember { mutableStateOf(Routes.Launch.route) }
     var selectedDifficulty by remember { mutableStateOf(Difficulty.NORMAL) }
 
     val launchViewModel = remember { LaunchViewModel() }
@@ -36,40 +35,51 @@ fun App() {
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            when (currentScreen) {
+            val (screen, params) = Routes.parseRoute(currentRoute)
+            when (screen) {
                 "launch" -> LaunchScreen(
                     viewModel = launchViewModel,
-                    onLaunchComplete = { currentScreen = "menu" }
+                    onLaunchComplete = { currentRoute = Routes.Menu.route }
                 )
                 "menu" -> MenuScreen(
                     viewModel = menuViewModel,
                     onDifficultySelected = { difficulty ->
                         selectedDifficulty = difficulty
                         gameViewModel.startNewGame(difficulty)
-                        currentScreen = "game"
+                        currentRoute = Routes.Game.createRoute(difficulty.name)
                     }
                 )
-                "game" -> GameScreen(
-                    viewModel = gameViewModel,
-                    onGameOver = {
-                        resultViewModel.updateResultState(
-                            isGameWon = gameViewModel.gameState.value.isGameWon,
-                            secretWord = gameViewModel.gameState.value.secretWord,
-                            attempts = gameViewModel.gameState.value.attempts
-                        )
-                        currentScreen = "result"
-                    }
-                )
-                "result" -> ResultScreen(
-                    viewModel = resultViewModel,
-                    onPlayAgain = {
-                        gameViewModel.startNewGame(selectedDifficulty)
-                        currentScreen = "game"
-                    },
-                    onReturnToMenu = {
-                        currentScreen = "menu"
-                    }
-                )
+                "game" -> {
+                    val difficulty = Difficulty.valueOf(params["difficulty"] ?: Difficulty.NORMAL.name)
+                    GameScreen(
+                        viewModel = gameViewModel,
+                        onGameOver = {
+                            resultViewModel.updateResultState(
+                                isGameWon = gameViewModel.gameState.value.isGameWon,
+                                secretWord = gameViewModel.gameState.value.secretWord,
+                                attempts = gameViewModel.gameState.value.attempts
+                            )
+                            currentRoute = Routes.Result.createRoute(
+                                isGameWon = gameViewModel.gameState.value.isGameWon,
+                                secretWord = gameViewModel.gameState.value.secretWord,
+                                attempts = gameViewModel.gameState.value.attempts
+                            )
+                        }
+                    )
+                }
+                "result" -> {
+                    val isGameWon = params["isGameWon"]?.toBoolean() ?: false
+                    val secretWord = params["secretWord"] ?: ""
+                    val attempts = params["attempts"]?.toInt() ?: 0
+                    ResultScreen(
+                        viewModel = resultViewModel,
+                        onPlayAgain = {
+                            gameViewModel.startNewGame(selectedDifficulty)
+                            currentRoute = Routes.Game.createRoute(selectedDifficulty.name)
+                        },
+                        onReturnToMenu = { currentRoute = Routes.Menu.route }
+                    )
+                }
             }
         }
     }
