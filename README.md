@@ -1,6 +1,6 @@
 ## pr04-hangman-app-yagoalonso_alexvilanova
 ### Menú Principal
-![Menú Principal](ImagenesReadme/1menu.png)
+![Menú Principal](ImagenesReadme/menu.png)
 
 ### Flujo del programa
 ![Orden 1](ImagenesReadme/orden1.png)
@@ -25,4 +25,4 @@
 ![Orden 9](ImagenesReadme/orden9.png)
 
 ### Si aciertas 
-![Orden 10](ImagenesReadme/Captura de pantalla 2024-12-13 a las 13.52.56.png)
+![Orden 10](ImagenesReadme/orden10png)
