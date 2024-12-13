@@ -3,45 +3,74 @@ package com.example.pr4
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.pr4.ui.theme.Pr4Theme
+import com.example.pr4.models.Difficulty
+import com.example.pr4.models.MockWordRepository
+import com.example.pr4.modelview.*
+import com.example.pr4.views.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            Pr4Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            App()
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    Pr4Theme {
-        Greeting("Android")
+fun App() {
+    var currentScreen by remember { mutableStateOf("launch") }
+    var selectedDifficulty by remember { mutableStateOf(Difficulty.NORMAL) }
+
+    val launchViewModel = remember { LaunchViewModel() }
+    val menuViewModel = remember { MenuViewModel() }
+    val gameViewModel = remember { GameViewModel(MockWordRepository()) }
+    val resultViewModel = remember { ResultViewModel() }
+
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            when (currentScreen) {
+                "launch" -> LaunchScreen(
+                    viewModel = launchViewModel,
+                    onLaunchComplete = { currentScreen = "menu" }
+                )
+                "menu" -> MenuScreen(
+                    viewModel = menuViewModel,
+                    onDifficultySelected = { difficulty ->
+                        selectedDifficulty = difficulty
+                        gameViewModel.startNewGame(difficulty)
+                        currentScreen = "game"
+                    }
+                )
+                "game" -> GameScreen(
+                    viewModel = gameViewModel,
+                    onGameOver = {
+                        resultViewModel.updateResultState(
+                            isGameWon = gameViewModel.gameState.value.isGameWon,
+                            secretWord = gameViewModel.gameState.value.secretWord,
+                            attempts = gameViewModel.gameState.value.attempts
+                        )
+                        currentScreen = "result"
+                    }
+                )
+                "result" -> ResultScreen(
+                    viewModel = resultViewModel,
+                    onPlayAgain = {
+                        gameViewModel.startNewGame(selectedDifficulty)
+                        currentScreen = "game"
+                    },
+                    onReturnToMenu = {
+                        currentScreen = "menu"
+                    }
+                )
+            }
+        }
     }
 }

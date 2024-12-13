@@ -1,9 +1,9 @@
-package com.example.pr4.viewmodels
+package com.example.pr4.modelview
 
 import androidx.lifecycle.ViewModel
-import com.example.pr4.models.Difficulty
 import com.example.pr4.models.GameModel
-import com.example.pr4.repository.MockWordRepository
+import com.example.pr4.models.MockWordRepository
+import com.example.pr4.models.Difficulty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,9 +13,9 @@ class GameViewModel(private val wordRepository: MockWordRepository) : ViewModel(
     val gameState = _gameState.asStateFlow()
 
     fun startNewGame(difficulty: Difficulty) {
-        val secretWord = wordRepository.getWordByDifficulty(difficulty).uppercase()
+        val secretWord = wordRepository.getWordByDifficulty(difficulty)
         _gameState.value = GameModel(
-            secretWord = secretWord,
+            secretWord = secretWord.lowercase(),
             revealedWord = "*".repeat(secretWord.length),
             difficulty = difficulty
         )
@@ -23,19 +23,18 @@ class GameViewModel(private val wordRepository: MockWordRepository) : ViewModel(
 
     fun guessLetter(letter: Char) {
         val currentState = _gameState.value
-        val upperLetter = letter.uppercaseChar() // Convertir letra a mayúscula
-        if (currentState.usedLetters.contains(upperLetter)) return
+        if (currentState.usedLetters.contains(letter)) return
 
-        val updatedUsedLetters = currentState.usedLetters + upperLetter
+        val updatedUsedLetters = currentState.usedLetters + letter
         var updatedRevealedWord = currentState.revealedWord
         var updatedAttempts = currentState.attempts
         var isGameWon = false
         var isGameLost = false
 
-        if (currentState.secretWord.contains(upperLetter, ignoreCase = true)) {
+        if (currentState.secretWord.contains(letter, ignoreCase = true)) {
             updatedRevealedWord = currentState.secretWord
                 .mapIndexed { index, char ->
-                    if (char.equals(upperLetter, ignoreCase = true)) upperLetter
+                    if (char.equals(letter, ignoreCase = true)) letter
                     else currentState.revealedWord[index]
                 }
                 .joinToString("")

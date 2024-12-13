@@ -1,4 +1,4 @@
-package com.example.pr4.viewmodels
+package com.example.pr4.modelview
 
 import androidx.lifecycle.ViewModel
 import com.example.pr4.models.LaunchModel

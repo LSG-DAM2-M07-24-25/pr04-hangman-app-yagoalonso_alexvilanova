@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.pr4"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.pr4"
@@ -42,6 +42,9 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation ("androidx.compose.ui:ui:1.5.0")
+    implementation ("androidx.compose.material3:material3:1.2.0")
+    implementation ("androidx.activity:activity-compose:1.8.0")
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

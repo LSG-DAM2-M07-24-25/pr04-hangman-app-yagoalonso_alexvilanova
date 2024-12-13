@@ -1,5 +1,6 @@
 package com.example.pr4.models
 
+
 data class GameModel(
     val secretWord: String = "",
     val revealedWord: String = "",

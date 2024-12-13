@@ -10,7 +10,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pr4.models.Difficulty
-import com.example.pr4.viewmodels.MenuViewModel
+import com.example.pr4.modelview.MenuViewModel
 import com.example.pr4.R
 
 @OptIn(ExperimentalMaterial3Api::class)
