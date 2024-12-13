@@ -25,4 +25,4 @@
 ![Orden 9](ImagenesReadme/orden9.png)
 
 ### Si aciertas 
-![Orden 10](ImagenesReadme/orden10png)
+![Orden 10](ImagenesReadme/orden10.png)
